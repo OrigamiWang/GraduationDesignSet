@@ -1,0 +1,14 @@
+{
+    "list": [
+        {
+            "id": 1,
+            "name": "origami",
+            "password": "abc123",
+            "email": "1234@qq.com",
+            "phone": "12345678945",
+            "date": "2024-01-01",
+            "role": "管理员"
+        }
+    ],
+    "pageTotal": 1
+}

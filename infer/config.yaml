@@ -1,0 +1,16 @@
+env: 'DEV'
+port: 4000
+sd:
+  base_path: '/sd_models'
+  meta_data:
+    prompt: '(((masterpiece))),(((bestquality))),((ultra-detailed)),(illustration),((anextremelydelicateandbeautiful))'
+    negative_prompt: 'EasyNegative,badhandv4'
+  prompt_gen:
+    clip_model_name: 'ViT-L-14/openai'
+    cache_dir: '/sd_models/clip_interrogator'
+mysql:
+  host: '172.18.166.244'
+  port: 3306
+  user: 'origami'
+  password: 'Zhanwang123_'
+  database: 'graduation_design'

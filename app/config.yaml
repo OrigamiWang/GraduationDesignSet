@@ -1,0 +1,28 @@
+env: 'DEV'
+redis:
+  host: '172.18.166.244'
+  port: 6379
+  password: 'Zhanwang123_'
+  key: # redis的key
+    pod_cnt: 'INFER:POD:CNT'
+    ss_name: 'INFER:POD:SS_NAME'
+    cache_map: 'INFER:CACHE_MAP'
+    empty_queue: 'INFER:EMPTY_QUEUE'
+mysql:
+  host: '172.18.166.244'
+  port: 3306
+  user: 'origami'
+  password: 'Zhanwang123_'
+  database: 'graduation_design'
+sd:
+  meta_data:
+    prompt: '(((masterpiece))),(((bestquality))),((ultra-detailed)),(illustration),((anextremelydelicateandbeautiful))'
+    negative_prompt: 'EasyNegative,badhandv4'
+  prompt_gen:
+    clip_model_name: 'ViT-L-14/openai'
+    cache_dir: 'E:\GraduationDesign\models\clip_interrogator'
+proxy:
+  infer: 
+    url_template: 'http://127.0.0.1:4000/infer/txt2img'
+    
+

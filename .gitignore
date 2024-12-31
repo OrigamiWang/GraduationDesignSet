@@ -1,0 +1,11 @@
+demo/
+stable-diffusion/
+stablediffusion/
+
+**/*.pyc
+**/*.png
+**/*.jpg
+
+**/*.pt
+**/*.safetensors
+**/__pycache__
