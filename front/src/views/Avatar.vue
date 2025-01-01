@@ -1,4 +1,13 @@
 <template>
+<header class="bg-gray-700 p-4" style="padding-left: 3vw;">
+    <nav>
+        <ul class="flex space-x-4" style="align-items: center;">
+            <li :class="{ 'active': $route.path === config.index }" v-for="config in create_configs" style="margin-left: 2vw;">
+                <router-link :to="config.index">{{ config.title }}</router-link>
+            </li>
+        </ul>
+    </nav>
+</header>
 <div class="full">
     <h1 class="center">动漫头像</h1>
     <div class="around column">
@@ -45,7 +54,6 @@
 </div>
 </template>
 
-    
 <script>
 import { fetch, fetch_form_data } from '../service/fetch.js'
 import axios from 'axios'
@@ -58,6 +66,31 @@ export default {
     },
     data() {
         return {
+            create_configs: [{
+                    "index": "/txt2imgpro",
+                    "title": "文生图-专业"
+                },
+                {
+                    "index": "/img2imgpro",
+                    "title": "图生图-专业"
+                },
+                {
+                    "index": "/txt2img",
+                    "title": "文生图-入门"
+                },
+                {
+                    "index": "/img2img",
+                    "title": "图生图-入门"
+                },
+                {
+                    "index": "/avatar",
+                    "title": "动漫头像"
+                },
+                {
+                    "index": "/bg",
+                    "title": "动漫背景替换"
+                },
+            ],
             fileList: [],
             steps_options: [{ "label": "粗糙", "value": 10 }, { "label": "中等", "value": 25 }, { "label": "精细", "value": 50 }],
             img: {
@@ -70,7 +103,7 @@ export default {
             width: 720,
             height: 1280,
             is_keep_random_seed: false,
-            imgs: [],   
+            imgs: [],
             batch_cnt: 1,
             seed: -1,
             img_base64_str: '',
@@ -85,7 +118,7 @@ export default {
             var res = null
             await axios.post("http://localhost:5173/api/file/upload/check", formData, {
                 headers: {
-                'Content-Type': 'multipart/form-data'
+                    'Content-Type': 'multipart/form-data'
                 }
             }).then(response => {
                 var data = response.data.result
@@ -97,7 +130,7 @@ export default {
                     this.$message.success("上传成功");
                     res = true
                 }
-                
+
             }).catch(error => {
                 console.log(error);
                 res = false
@@ -107,7 +140,7 @@ export default {
             // return false
         },
         handleSuccess(file) {
-            this.fileList.push({"filename": file.result.filename, "base64_str": file.result.base64_str})
+            this.fileList.push({ "filename": file.result.filename, "base64_str": file.result.base64_str })
             this.img_base64_str = file.result.base64_str
         },
         handleRemove(file, fileList) {
@@ -165,10 +198,10 @@ export default {
         generate_img() {
             if (this.fileList.length == 0) {
                 this.$message.warning("请先上传图片!");
-                return 
+                return
             } else if (this.fileList.length > 1) {
                 this.$message.warning("只能上传一张图片!");
-                return 
+                return
             }
             var reqBody = {
                 txt2img: true,
@@ -211,5 +244,4 @@ export default {
 }
 </script>
 
-    
 <style></style>

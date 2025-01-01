@@ -1,76 +1,82 @@
 <template>
-   <main class="container mx-auto p-8">
-      <div class="grid grid-cols-4 gap-4">
-        <div v-for="img in currentPageImages" :key="img.id" class="bg-gray-700 h-64">
-          <!-- 这里可以根据实际情况添加图片展示的具体内容，比如img标签等 -->
-        </div>
-      </div>
-      <div class="mt-4 flex justify-center space-x-2">
-        <button @click="prevPage" :disabled="currentPage === 1">上一页</button>
-        <button v-for="page in totalPages" :key="page" @click="goToPage(page)" :class="{ 'active': currentPage === page }">
-          {{ page }}
-        </button>
-        <button @click="nextPage" :disabled="currentPage === totalPages">下一页</button>
-      </div>
-    </main> 
+<header class="bg-gray-700 p-4" style="padding-left: 3vw;">
+    <nav>
+        <ul class="flex space-x-4" style="align-items: center;">
+            <li :class="{ 'active': $route.path === config.title }" v-for="config in create_configs" style="margin-left: 2vw;">
+                <router-link :to="config.index">{{ config.title }}</router-link>
+            </li>
+        </ul>
+    </nav>
+</header>
 </template>
 
 <script>
-
 export default {
-  data() {
-    return {
-      images: [
-        { id: 1, url: 'https://example.com/img1.jpg' },
-        { id: 2, url: 'https://example.com/img2.jpg' },
-        { id: 3, url: 'https://example.com/img3.jpg' },
-        { id: 4, url: 'https://example.com/img4.jpg' },
-        { id: 1, url: 'https://example.com/img1.jpg' },
-        { id: 2, url: 'https://example.com/img2.jpg' },
-        { id: 3, url: 'https://example.com/img3.jpg' },
-        { id: 4, url: 'https://example.com/img4.jpg' },
-        { id: 1, url: 'https://example.com/img1.jpg' },
-        { id: 2, url: 'https://example.com/img2.jpg' },
-        { id: 3, url: 'https://example.com/img3.jpg' },
-        { id: 4, url: 'https://example.com/img4.jpg' },
-      ],
-      itemsPerPage: 8,
-      currentPage: 1
-    };
-  },
-  computed: {
-    totalPages() {
-      return Math.ceil(this.images.length / this.itemsPerPage);
+    data() {
+        return {
+            create_configs: [{
+                    "index": "/txt2imgpro",
+                    "title": "文生图-专业"
+                },
+                {
+                    "index": "/img2imgpro",
+                    "title": "图生图-专业"
+                },
+                {
+                    "index": "/txt2img",
+                    "title": "文生图-入门"
+                },
+                {
+                    "index": "/img2img",
+                    "title": "图生图-入门"
+                },
+                {
+                    "index": "/avatar",
+                    "title": "动漫头像"
+                },
+                {
+                    "index": "/bg",
+                    "title": "动漫背景替换"
+                },
+            ],
+            images: [],
+            itemsPerPage: 8,
+            currentPage: 1
+        };
     },
-    currentPageImages() {
-      const start = (this.currentPage - 1) * this.itemsPerPage;
-      const end = start + this.itemsPerPage;
-      return this.images.slice(start, end);
-    }
-  },
-  methods: {
-    prevPage() {
-      if (this.currentPage > 1) {
-        this.currentPage--;
-      }
+    computed: {
+        totalPages() {
+            return Math.ceil(this.images.length / this.itemsPerPage);
+        },
+        currentPageImages() {
+            const start = (this.currentPage - 1) * this.itemsPerPage;
+            const end = start + this.itemsPerPage;
+            return this.images.slice(start, end);
+        }
     },
-    nextPage() {
-      if (this.currentPage < this.totalPages) {
-        this.currentPage++;
-      }
+    methods: {
+        prevPage() {
+            if (this.currentPage > 1) {
+                this.currentPage--;
+            }
+        },
+        nextPage() {
+            if (this.currentPage < this.totalPages) {
+                this.currentPage++;
+            }
+        },
+        goToPage(page) {
+            if (page >= 1 && page <= this.totalPages) {
+                this.currentPage = page;
+            }
+        }
     },
-    goToPage(page) {
-      if (page >= 1 && page <= this.totalPages) {
-        this.currentPage = page;
-      }
-    }
-  },
 };
 </script>
 
 <style scoped>
 .active {
-  color: rgb(83, 83, 178); /* 这里可以设置高亮的样式，比如颜色等，根据实际需求调整 */
-  font-weight: bold;
+    color: rgb(83, 83, 178);
+    /* 这里可以设置高亮的样式，比如颜色等，根据实际需求调整 */
 }
 </style>

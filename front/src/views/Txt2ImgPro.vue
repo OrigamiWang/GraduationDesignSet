@@ -1,4 +1,13 @@
 <template>
+<header class="bg-gray-700 p-4" style="padding-left: 3vw;">
+    <nav>
+        <ul class="flex space-x-4" style="align-items: center;">
+            <li :class="{ 'active': $route.path === config.index }" v-for="config in create_configs" style="margin-left: 2vw;">
+                <router-link :to="config.index">{{ config.title }}</router-link>
+            </li>
+        </ul>
+    </nav>
+</header>
 <div class="full">
     <h1 class="center">文生图-专业</h1>
     <div class="around column">
@@ -96,6 +105,31 @@ export default {
     },
     data() {
         return {
+            create_configs: [{
+                    "index": "/txt2imgpro",
+                    "title": "文生图-专业"
+                },
+                {
+                    "index": "/img2imgpro",
+                    "title": "图生图-专业"
+                },
+                {
+                    "index": "/txt2img",
+                    "title": "文生图-入门"
+                },
+                {
+                    "index": "/img2img",
+                    "title": "图生图-入门"
+                },
+                {
+                    "index": "/avatar",
+                    "title": "动漫头像"
+                },
+                {
+                    "index": "/bg",
+                    "title": "动漫背景替换"
+                },
+            ],
             img: {
                 height: '100vh',
                 width: '10vw',
@@ -303,4 +337,9 @@ export default {
 }
 </script>
 
-<style></style>
+<style>
+.active {
+    color: rgb(83, 83, 178);
+    /* 这里可以设置高亮的样式，比如颜色等，根据实际需求调整 */
+}
+</style>

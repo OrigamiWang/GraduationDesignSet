@@ -1,4 +1,13 @@
 <template>
+<header class="bg-gray-700 p-4" style="padding-left: 3vw;">
+    <nav>
+        <ul class="flex space-x-4" style="align-items: center;">
+            <li :class="{ 'active': $route.path === config.index }" v-for="config in create_configs" style="margin-left: 2vw;">
+                <router-link :to="config.index">{{ config.title }}</router-link>
+            </li>
+        </ul>
+    </nav>
+</header>
 <div class="full">
     <h1 class="center">图生图-入门</h1>
     <div class="around column">
@@ -53,7 +62,6 @@
 </div>
 </template>
 
-    
 <script>
 import { fetch } from '../service/fetch.js'
 
@@ -65,6 +73,31 @@ export default {
     },
     data() {
         return {
+            create_configs: [{
+                    "index": "/txt2imgpro",
+                    "title": "文生图-专业"
+                },
+                {
+                    "index": "/img2imgpro",
+                    "title": "图生图-专业"
+                },
+                {
+                    "index": "/txt2img",
+                    "title": "文生图-入门"
+                },
+                {
+                    "index": "/img2img",
+                    "title": "图生图-入门"
+                },
+                {
+                    "index": "/avatar",
+                    "title": "动漫头像"
+                },
+                {
+                    "index": "/bg",
+                    "title": "动漫背景替换"
+                },
+            ],
             fileList: [],
             steps_options: [{ "label": "粗糙", "value": 10 }, { "label": "中等", "value": 25 }, { "label": "精细", "value": 50 }],
             img: {
@@ -77,7 +110,7 @@ export default {
             width: 720,
             height: 1280,
             is_keep_random_seed: false,
-            imgs: [],   
+            imgs: [],
             batch_cnt: 1,
             seed: -1,
             img_base64_str: '',
@@ -86,7 +119,7 @@ export default {
     },
     methods: {
         handleSuccess(file) {
-            this.fileList.push({"filename": file.result.filename, "base64_str": file.result.base64_str})
+            this.fileList.push({ "filename": file.result.filename, "base64_str": file.result.base64_str })
             this.img_base64_str = file.result.base64_str
         },
         handleRemove(file, fileList) {
@@ -183,5 +216,4 @@ export default {
 }
 </script>
 
-    
 <style></style>

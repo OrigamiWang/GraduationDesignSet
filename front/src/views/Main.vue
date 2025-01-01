@@ -4,7 +4,7 @@
         <div class="container mx-auto flex justify-between items-center">
             <h1 class="text-2xl font-bold">ORIGAMI</h1>
             <nav>
-                <ul class="flex space-x-4">
+                <ul class="flex space-x-4" style="align-items: center;">
                     <li :class="{ 'active': $route.path === '/' }">
                         <router-link to="/">Home</router-link>
                     </li>
@@ -14,16 +14,6 @@
                     <li :class="{ 'active': $route.path === '/images' }">
                         <router-link to="/images">Images</router-link>
                     </li>
-                    <li>
-                        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                            <router-link to="/create">Create</router-link>
-                        </button>
-                    </li>
-                    <!-- <li>
-                        <el-button type="primary" @click="showLoginDialog = true">
-                            Sign In
-                        </el-button>
-                    </li> -->
                     <li v-if="!isLoggedIn">
                         <el-button type="primary" @click="showLoginDialog = true">
                             Sign In
@@ -32,24 +22,28 @@
                     <li v-else>
                         <el-dropdown>
                             <span class="el-dropdown-link">
-                                <el-avatar style="cursor: pointer;" @click="showAvatarDropdown = true">
+                                <el-avatar style="cursor: pointer; height: 4vh; width: 4vh" @click="showAvatarDropdown = true">
                                     <img src="../assets/avatar/people.png" alt="">
                                 </el-avatar>
                             </span>
                             <template #dropdown>
                                 <el-dropdown-menu style="background-color: #25262b;">
-                                    <el-dropdown-item icon="el-icon-edit">
-                                        <el-icon color="#0c72c0">
-                                            <User />
-                                        </el-icon>
-                                        <span style="color: #b3b3b7;">Your Profile</span>
-                                    </el-dropdown-item>
-                                    <el-dropdown-item icon="el-icon-edit">
-                                        <el-icon color="#f28c12">
-                                            <Star />
-                                        </el-icon>
-                                        <span style="color: #b3b3b7;">Liked</span>
-                                    </el-dropdown-item>
+                                    <router-link to="/profile">
+                                        <el-dropdown-item icon="el-icon-edit">
+                                            <el-icon color="#0c72c0">
+                                                <User />
+                                            </el-icon>
+                                            <span style="color: #b3b3b7;">Your Profile</span>
+                                        </el-dropdown-item>
+                                    </router-link>
+                                    <router-link to="/liked">
+                                        <el-dropdown-item icon="el-icon-edit">
+                                            <el-icon color="#f28c12">
+                                                <Star />
+                                            </el-icon>
+                                            <span style="color: #b3b3b7;">Liked</span>
+                                        </el-dropdown-item>
+                                    </router-link>
                                 </el-dropdown-menu>
                             </template>
                         </el-dropdown>
@@ -58,6 +52,7 @@
             </nav>
         </div>
     </header>
+   
     <el-dialog title="登录" v-model="showLoginDialog" width="30vw" height="30vh" :before-close="handleLoginDialogClose">
         <el-form :model="loginForm" ref="loginForm" label-width="80px">
             <el-form-item label="用户名">
@@ -137,49 +132,14 @@ export default {
             },
             showPassword1: false,
             showPassword2: false,
-            images: [
-                { id: 1, url: 'https://example.com/img1.jpg' },
-                { id: 2, url: 'https://example.com/img2.jpg' },
-                { id: 3, url: 'https://example.com/img3.jpg' },
-                { id: 4, url: 'https://example.com/img4.jpg' },
-                { id: 5, url: 'https://example.com/img5.jpg' },
-                { id: 6, url: 'https://example.com/img6.jpg' },
-                { id: 7, url: 'https://example.com/img7.jpg' },
-                { id: 8, url: 'https://example.com/img8.jpg' },
-                { id: 9, url: 'https://example.com/img9.jpg' },
-                { id: 10, url: 'https://example.com/img10.jpg' },
-            ],
             itemsPerPage: 8,
             currentPage: 1,
             isLoggedIn: false // 新增，用于控制头像按钮显示隐藏
         };
     },
     computed: {
-        totalPages() {
-            return Math.ceil(this.images.length / this.itemsPerPage);
-        },
-        currentPageImages() {
-            const start = (this.currentPage - 1) * this.itemsPerPage;
-            const end = start + this.itemsPerPage;
-            return this.images.slice(start, end);
-        }
     },
     methods: {
-        prevPage() {
-            if (this.currentPage > 1) {
-                this.currentPage--;
-            }
-        },
-        nextPage() {
-            if (this.currentPage < this.totalPages) {
-                this.currentPage++;
-            }
-        },
-        goToPage(page) {
-            if (page >= 1 && page <= this.totalPages) {
-                this.currentPage = page;
-            }
-        },
         handleLoginDialogClose() {
             this.showLoginDialog = false;
         },
@@ -235,7 +195,6 @@ export default {
 <style scoped>
 .active {
     color: rgb(83, 83, 178);
-    font-weight: bold;
 }
 
 .avatar-dropdown {

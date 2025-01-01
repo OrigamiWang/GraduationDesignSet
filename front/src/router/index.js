@@ -24,56 +24,48 @@ const routes =
                     name: 'Images',
                     component: () => import('../views/Images.vue')
                 },
-            ]  
-        },
-        {
-            path: '/test',
-            name: 'test',
-            component: () => import('../views/test.vue')
-        },
-        {
-            path: '/create',
-            name: 'create',
-            component: () => import('../views/Guide.vue'),
-            children: [
                 {
-                    path: '/create/',
-                    name: 'GuideMain',
-                    component: () => import('../views/GuideMain.vue')
+                    path: '/profile',
+                    name: 'Profile',
+                    component: () => import('../views/Profile.vue')
                 },
                 {
-                    path: '/create/txt2imgpro',
+                    path: '/liked',
+                    name: 'Liked',
+                    component: () => import('../views/Liked.vue')
+                },
+                {
+                    path: '/txt2imgpro',
                     name: 'txt2imgpro',
                     component: () => import('../views/Txt2ImgPro.vue')
                 },
                 {
-                    path: '/create/img2imgpro',
+                    path: '/img2imgpro',
                     name: 'img2imgpro',
                     component: () => import('../views/Img2ImgPro.vue')
                 },
                 {
-                    path: '/create/txt2img',
+                    path: '/txt2img',
                     name: 'txt2img',
                     component: () => import('../views/Txt2Img.vue')
                 },
                 {
-                    path: '/create/img2img',
+                    path: '/img2img',
                     name: 'img2img',
                     component: () => import('../views/Img2Img.vue')
                 },
                 {
-                    path: '/create/avatar',
+                    path: '/avatar',
                     name: 'avatar',
                     component: () => import('../views/Avatar.vue')
                 },
                 {
-                    path: '/create/bg',
+                    path: '/bg',
                     name: 'bg',
                     component: () => import('../views/ReplaceBg.vue')
                 },
-            ]
+            ]  
         },
-
     ]
 
 const router = createRouter({

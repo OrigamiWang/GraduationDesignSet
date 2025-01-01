@@ -1,4 +1,13 @@
 <template>
+<header class="bg-gray-700 p-4" style="padding-left: 3vw;">
+    <nav>
+        <ul class="flex space-x-4" style="align-items: center;">
+            <li :class="{ 'active': $route.path === config.index }" v-for="config in create_configs" style="margin-left: 2vw;">
+                <router-link :to="config.index">{{ config.title }}</router-link>
+            </li>
+        </ul>
+    </nav>
+</header>
 <div class="full">
     <h1 class="center">文生图-入门</h1>
     <div class="around column">
@@ -62,6 +71,31 @@ export default {
     },
     data() {
         return {
+            create_configs: [{
+                    "index": "/txt2imgpro",
+                    "title": "文生图-专业"
+                },
+                {
+                    "index": "/img2imgpro",
+                    "title": "图生图-专业"
+                },
+                {
+                    "index": "/txt2img",
+                    "title": "文生图-入门"
+                },
+                {
+                    "index": "/img2img",
+                    "title": "图生图-入门"
+                },
+                {
+                    "index": "/avatar",
+                    "title": "动漫头像"
+                },
+                {
+                    "index": "/bg",
+                    "title": "动漫背景替换"
+                },
+            ],
             steps_options: [{ "label": "粗糙", "value": 10 }, { "label": "中等", "value": 25 }, { "label": "精细", "value": 50 }],
             img: {
                 height: '100vh',
