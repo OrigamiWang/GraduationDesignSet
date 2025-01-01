@@ -16,7 +16,7 @@ export default {
     },
     data() {
         return {
-            activeIndex: '/guide',
+            activeIndex: '/create',
             form: {},
             model_options: [],
             model_base_map: {},
@@ -24,17 +24,17 @@ export default {
             prompt: '',
             negative_prompt: '',
             menu_configs: [
-                {   "index": "/guide/txt2imgpro",
+                {   "index": "/create/txt2imgpro",
                     "title": "文生图-专业"},
-                {   "index": "/guide/img2imgpro",
+                {   "index": "/create/img2imgpro",
                     "title": "图生图-专业"},
-                {   "index": "/guide/txt2img",
+                {   "index": "/create/txt2img",
                     "title": "文生图-入门"},
-                {   "index": "/guide/img2img",
+                {   "index": "/create/img2img",
                     "title": "图生图-入门"},
-                {   "index": "/guide/avatar",
+                {   "index": "/create/avatar",
                     "title": "动漫头像"},
-                {   "index": "/guide/bg",
+                {   "index": "/create/bg",
                     "title": "动漫背景替换"},
             ]
         }

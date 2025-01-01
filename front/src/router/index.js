@@ -7,8 +7,24 @@ const routes =
         {
             path: '/',
             name: 'Main',
-            component: () => import('../views/Main.vue')
-            // component: () => import('../views/Main.vue')
+            component: () => import('../views/Main.vue'),
+            children: [
+                {
+                    path: '/',
+                    name: 'Home',
+                    component: () => import('../views/Home.vue')
+                },
+                {
+                    path: '/models',
+                    name: 'Models',
+                    component: () => import('../views/Models.vue')
+                },
+                {
+                    path: '/images',
+                    name: 'Images',
+                    component: () => import('../views/Images.vue')
+                },
+            ]  
         },
         {
             path: '/test',
@@ -16,42 +32,42 @@ const routes =
             component: () => import('../views/test.vue')
         },
         {
-            path: '/guide',
-            name: 'guide',
+            path: '/create',
+            name: 'create',
             component: () => import('../views/Guide.vue'),
             children: [
                 {
-                    path: '/',
-                    name: 'guide_main',
+                    path: '/create/',
+                    name: 'GuideMain',
                     component: () => import('../views/GuideMain.vue')
                 },
                 {
-                    path: '/guide/txt2imgpro',
+                    path: '/create/txt2imgpro',
                     name: 'txt2imgpro',
                     component: () => import('../views/Txt2ImgPro.vue')
                 },
                 {
-                    path: '/guide/img2imgpro',
+                    path: '/create/img2imgpro',
                     name: 'img2imgpro',
                     component: () => import('../views/Img2ImgPro.vue')
                 },
                 {
-                    path: '/guide/txt2img',
+                    path: '/create/txt2img',
                     name: 'txt2img',
                     component: () => import('../views/Txt2Img.vue')
                 },
                 {
-                    path: '/guide/img2img',
+                    path: '/create/img2img',
                     name: 'img2img',
                     component: () => import('../views/Img2Img.vue')
                 },
                 {
-                    path: '/guide/avatar',
+                    path: '/create/avatar',
                     name: 'avatar',
                     component: () => import('../views/Avatar.vue')
                 },
                 {
-                    path: '/guide/bg',
+                    path: '/create/bg',
                     name: 'bg',
                     component: () => import('../views/ReplaceBg.vue')
                 },
