@@ -1,21 +1,7 @@
-import json
+from PIL import Image
 
+# 创建一个新的RGB图像，指定宽度、高度以及颜色模式
+img = Image.new('RGB', (720, 1280), (255, 0, 0))
 
-taro_json = {
-    "negative_prompt": "bad fingers",
-    "cfg_scale": 7,
-    "steps": 5,
-    "model_id": "anything-v4.5.ckpt",
-    "lora_config": {
-        "AnimeTaroCard.safetensors": 1.0,
-        "AtdanLora.safetensors": 0.6
-    },
-    "sampler_id": "DPM++ 2M Karras",
-    "vae_id": "orangemixvaeReupload_v10.pt",
-}
-
-
-
-d = json.dumps(taro_json,  ensure_ascii=True)
-d = d.replace('"', '\\"').replace('{', '\\{').replace('}', '\\}')
-print(d)
+# 保存图像为文件，这里保存为'red_image.jpg'，你也可以根据需求更换保存格式及文件名
+img.save('720x1280.png')

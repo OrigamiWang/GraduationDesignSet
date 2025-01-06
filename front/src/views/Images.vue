@@ -1,5 +1,5 @@
 <template>
-  <main class="container mx-auto p-8">
+  <main class="container mx-auto p-8 full">
     <div class="grid grid-cols-4 gap-4">
       <div v-for="img in currentPageImages" :key="img.id" class="bg-gray-700 h-64">
       </div>
@@ -15,13 +15,6 @@
 </template>
 
 <script>
-
-const routes = [
-  { path: '/', component: { template: '<div>Home Page</div>' } },
-  { path: '/models', component: { template: '<div>Models Page</div>' } },
-  { path: '/images', component: { template: '<div>Images Page</div>' } },
-  { path: '/guide', component: { template: '<div>Create Guide Page</div>' } },
-];
 
 
 export default {

@@ -33,7 +33,7 @@ export default defineConfig({
         target: 'http://127.0.0.1:5000', // 后端地址
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '') // 移除路径中的 /api 前缀
-      }
+      },
     }
   }
 })

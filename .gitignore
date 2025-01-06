@@ -1,6 +1,7 @@
 demo/
 stable-diffusion/
 stablediffusion/
+minio/
 
 **/*.pyc
 **/*.png

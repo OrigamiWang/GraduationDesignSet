@@ -1,15 +1,29 @@
 <template>
-<header class="bg-gray-700 p-4" style="padding-left: 3vw;">
+<header class="bg-gray-700 p-4" style="padding-left: 4.5vw;">
     <nav>
         <ul class="flex space-x-4" style="align-items: center;">
-            <li :class="{ 'active': $route.path === config.index }" v-for="config in create_configs" style="margin-left: 2vw;">
-                <router-link :to="config.index">{{ config.title }}</router-link>
-            </li>
+            <el-button ref="ref1" link :class="{ 'active_2': $route.path === '/txt2imgpro' }" type="primary">
+                <router-link to="/txt2imgpro">文生图-专业</router-link>
+            </el-button>
+            <el-button ref="ref2" link :class="{ 'active_2': $route.path === '/img2imgpro' }" type="primary">
+                <router-link to="/img2imgpro">图生图-专业</router-link>
+            </el-button>
+            <el-button ref="ref3" link :class="{ 'active_2': $route.path === '/txt2img' }" type="primary">
+                <router-link to="/txt2img">文生图-入门</router-link>
+            </el-button>
+            <el-button ref="ref4" link :class="{ 'active_2': $route.path === '/img2img' }" type="primary">
+                <router-link to="/img2img">图生图-入门</router-link>
+            </el-button>
+            <el-button ref="ref5" link :class="{ 'active_2': $route.path === '/avatar' }" type="primary">
+                <router-link to="/avatar">动漫头像</router-link>
+            </el-button>
+            <el-button ref="ref6" link :class="{ 'active_2': $route.path === '/bg' }" type="primary">
+                <router-link to="/bg">动漫背景替换</router-link>
+            </el-button>
         </ul>
     </nav>
 </header>
-<div class="full">
-    <h1 class="center">动漫头像</h1>
+<div>
     <div class="around column">
         <div id="form">
             <el-form ref="form" :model="form">
@@ -244,4 +258,12 @@ export default {
 }
 </script>
 
-<style></style>
+<style scoped>
+.active {
+    color: rgb(83, 83, 178);
+    /* 这里可以设置高亮的样式，比如颜色等，根据实际需求调整 */
+}
+.active_2 {
+    color: rgb(90, 222, 255);
+}
+</style>

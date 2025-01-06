@@ -64,8 +64,18 @@ const routes =
                     name: 'bg',
                     component: () => import('../views/ReplaceBg.vue')
                 },
-            ]  
+                {
+                    path: '/history',
+                    name: 'History',
+                    component: () => import('../views/History.vue')
+                },
+            ] 
         },
+        {
+            path: '/test',
+            name: 'test',
+            component: () => import('../views/Test.vue'),
+        }
     ]
 
 const router = createRouter({

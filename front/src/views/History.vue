@@ -1,8 +1,7 @@
 <template>
-  <main class="container mx-auto p-8 full">
+  <main class="container mx-auto p-8">
     <div class="grid grid-cols-4 gap-4">
       <div v-for="img in currentPageImages" :key="img.id" class="bg-gray-700 h-64">
-        <!-- 这里可以根据实际情况添加图片展示的具体内容，比如img标签等 -->
       </div>
     </div>
     <div class="mt-4 flex justify-center space-x-2">
@@ -31,12 +30,6 @@ export default {
       images: [
         { id: 1, url: 'https://example.com/img1.jpg' },
         { id: 2, url: 'https://example.com/img2.jpg' },
-        { id: 3, url: 'https://example.com/img3.jpg' },
-        { id: 4, url: 'https://example.com/img4.jpg' },
-        { id: 4, url: 'https://example.com/img4.jpg' },
-        { id: 4, url: 'https://example.com/img4.jpg' },
-        { id: 4, url: 'https://example.com/img4.jpg' },
-        { id: 4, url: 'https://example.com/img4.jpg' },
       ],
       itemsPerPage: 8,
       currentPage: 1

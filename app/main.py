@@ -72,5 +72,39 @@ def background_replace():
     bg_img = req['bg_img']
     return bg_replace_handler(src_img, bg_img)
 
+# 用户操作
+@app.route("/user/register", methods=["POST"])
+@standard_response
+def register():
+    req = request.get_json()
+    name = req['username']
+    pswd = req['password']
+    return create_user_handler(name, pswd)
+
+@app.route("/user/one", methods=["POST"])
+@standard_response
+def get_one_user():
+    req = request.get_json()
+    name = req['username']
+    return get_one_user_hanlder(name)
+
+@app.route("/user/check", methods=["POST"])
+@standard_response
+def check_user():
+    req = request.get_json()
+    name = req['username']
+    pswd = req['password']
+    return check_user_handler(name, pswd)
+
+
+# history
+@app.route("/history/add", methods=["POST"])
+@standard_response
+def add_his():
+    req = request.get_json()
+    uid, type_name, buk, filepath = req['uid'], req['type'], req['buk'], req['filepath']
+    config, input = req.get('config', {}), req.get('input', {})
+    add_his_handler(uid, type_name, buk, filepath, config, input)
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)

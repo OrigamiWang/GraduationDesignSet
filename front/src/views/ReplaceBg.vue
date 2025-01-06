@@ -1,18 +1,32 @@
 <template>
-<header class="bg-gray-700 p-4" style="padding-left: 3vw;">
+<header class="bg-gray-700 p-4" style="padding-left: 4.5vw;">
     <nav>
         <ul class="flex space-x-4" style="align-items: center;">
-            <li :class="{ 'active': $route.path === config.index }" v-for="config in create_configs" style="margin-left: 2vw;">
-                <router-link :to="config.index">{{ config.title }}</router-link>
-            </li>
+            <el-button ref="ref1" link :class="{ 'active_2': $route.path === '/txt2imgpro' }" type="primary">
+                <router-link to="/txt2imgpro">文生图-专业</router-link>
+            </el-button>
+            <el-button ref="ref2" link :class="{ 'active_2': $route.path === '/img2imgpro' }" type="primary">
+                <router-link to="/img2imgpro">图生图-专业</router-link>
+            </el-button>
+            <el-button ref="ref3" link :class="{ 'active_2': $route.path === '/txt2img' }" type="primary">
+                <router-link to="/txt2img">文生图-入门</router-link>
+            </el-button>
+            <el-button ref="ref4" link :class="{ 'active_2': $route.path === '/img2img' }" type="primary">
+                <router-link to="/img2img">图生图-入门</router-link>
+            </el-button>
+            <el-button ref="ref5" link :class="{ 'active_2': $route.path === '/avatar' }" type="primary">
+                <router-link to="/avatar">动漫头像</router-link>
+            </el-button>
+            <el-button ref="ref6" link :class="{ 'active_2': $route.path === '/bg' }" type="primary">
+                <router-link to="/bg">动漫背景替换</router-link>
+            </el-button>
         </ul>
     </nav>
 </header>
-<div class="full">
-    <h1 class="center">动漫背景替换</h1>
+<div style="height: 100vh; min-height: 100vh;">
     <div class="around column">
         <div id="form">
-            <el-form ref="form" :model="form">
+            <el-form ref="form" :model="form" :label-position="itemLabelPosition" label-width="auto" size="default" style="width: 35vw; max-width: 35vw;">
                 <el-form-item label="原始动漫图片">
                     <el-upload class="upload-demo" :action="upload_img()" :on-success="handleSrcImgSuccess" :on-preview="handlePreview" :on-remove="handleRemove" :file-list="src_img_file_list" list-type="picture">
                         <el-button size="small" type="primary">点击上传</el-button>
@@ -38,13 +52,13 @@
 </template>
 
 <script>
-import { fetch, fetch_form_data } from '../service/fetch.js'
-import axios from 'axios'
+import { fetch } from '../service/fetch.js'
 
 export default {
     mounted() {},
     data() {
         return {
+            itemLabelPosition: 'right',
             create_configs: [{
                     "index": "/txt2imgpro",
                     "title": "文生图-专业"
@@ -131,4 +145,12 @@ export default {
 }
 </script>
 
-<style></style>
+<style scoped>
+.active {
+    color: rgb(83, 83, 178);
+    /* 这里可以设置高亮的样式，比如颜色等，根据实际需求调整 */
+}
+.active_2 {
+    color: rgb(90, 222, 255);
+}
+</style>

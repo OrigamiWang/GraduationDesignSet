@@ -1,16 +1,23 @@
 import json
 from flask import request
+import copy
+import time
 
 from biz import get_and_cache_img_prompt, wait_for_pod_name
 from model import SDMetaData, TxtPromptData, ImgPromptData, ImgData, InferData, ExtData, ModelData, LoraConfig
-from util import get_map_val, forward
+from util import get_map_val, forward, MINIO_CLI
 from common import LOGGER, CONFIG
-
+from dal import add_his
 
 def generate_handler():
     req_dict = request.get_json()
     
-    
+    uid = get_map_val(req_dict, 'uid')
+    type_name = get_map_val(req_dict, 'type')
+    copy_req_dict = copy.deepcopy(req_dict)
+    del copy_req_dict['uid']
+    del copy_req_dict['type']
+
     img_data = ImgData(get_map_val(req_dict, 'width'), 
                        get_map_val(req_dict, 'height'))
     infer_data = InferData(get_map_val(req_dict, 'cfg_scale'), 
@@ -24,7 +31,8 @@ def generate_handler():
                            get_map_val(req_dict, 'sampler_id'), 
                            get_map_val(req_dict, 'vae_id'))
     
-    
+    b64_img_list = []
+
     if req_dict['txt2img']:
         # txt2img
         print("===txt2img===")
@@ -44,7 +52,7 @@ def generate_handler():
         LOGGER.info(f'proxy_url: {proxy_url}')
         LOGGER.info(f'pod_name: {pod_name}')
         # byte to str
-        return json.dumps(json.loads(resp.content))
+        b64_img_list = json.loads(resp.content)
     else:
         # img2img
         print("===img2img===")
@@ -65,8 +73,28 @@ def generate_handler():
         LOGGER.info(f'proxy_url: {proxy_url}')
         LOGGER.info(f'pod_name: {pod_name}')
         # byte to str
-        return json.dumps(json.loads(resp.content))
+        b64_img_list = json.loads(resp.content)
+    url_list = []
+    file_list = []
+    print(f'b64_img_list: {len(b64_img_list)}')
+    for idx in range(len(b64_img_list)):
+        b64_img = b64_img_list[idx]
+        filename = f'{str(time.time()).replace(".", "")}{idx}'
+        filepath = f"user-{uid}/{type_name}/{filename}.png"
+        file_list.append(filepath)
+        # 上传图片到oss并返回在线url结果
+        presigned_url = MINIO_CLI.upload_file("stable-diffusion", filepath, b64_img)
+        url_list.append(presigned_url)
+    for filepath in file_list:
+        add_his(uid, type_name, "stable-diffusion", filepath, config=copy_req_dict, input={})
+    # 将结果也保存一份到mysql作为历史记录
     
+    return json.dumps(url_list)
+
+        
+    
+
+
 
 def avatar_handler():
     req_dict = request.get_json()

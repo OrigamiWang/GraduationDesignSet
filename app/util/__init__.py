@@ -7,6 +7,7 @@ from .map import *
 from .hash import *
 from .decode_bytes import *
 from .forward_req import *
+from .oss import *
 
 
 __all__ = ['standard_response', 'format_filepath', 'encode_base64', 'decode_base64', 

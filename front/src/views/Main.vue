@@ -1,8 +1,10 @@
 <template>
-<div class="bg-gray-900 text-white full">
+<div class="bg-gray-900 text-white">
     <header class="bg-gray-800 p-4">
         <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-bold">ORIGAMI</h1>
+            <h1 class="text-2xl font-bold">
+                <router-link to="/">ORIGAMI</router-link>
+            </h1>
             <nav>
                 <ul class="flex space-x-4" style="align-items: center;">
                     <li :class="{ 'active': $route.path === '/' }">
@@ -44,6 +46,22 @@
                                             <span style="color: #b3b3b7;">Liked</span>
                                         </el-dropdown-item>
                                     </router-link>
+                                    <router-link to="/history">
+                                        <el-dropdown-item icon="el-icon-edit">
+                                            <el-icon color="#f28c12">
+                                                <Star />
+                                            </el-icon>
+                                            <span style="color: #b3b3b7;">History</span>
+                                        </el-dropdown-item>
+                                    </router-link>
+                                    <el-dropdown-item icon="el-icon-edit" divided @click="logout">
+                                        <el-icon color="#ff3d57">
+                                            <el-icon>
+                                                <SwitchButton />
+                                            </el-icon>
+                                        </el-icon>
+                                        <span style="color: #b3b3b7;">Logout</span>
+                                    </el-dropdown-item>
                                 </el-dropdown-menu>
                             </template>
                         </el-dropdown>
@@ -52,7 +70,7 @@
             </nav>
         </div>
     </header>
-   
+
     <el-dialog title="登录" v-model="showLoginDialog" width="30vw" height="30vh" :before-close="handleLoginDialogClose">
         <el-form :model="loginForm" ref="loginForm" label-width="80px">
             <el-form-item label="用户名">
@@ -115,6 +133,8 @@
 </template>
 
 <script>
+import { fetch } from '../service/fetch.js'
+
 export default {
     data() {
         return {
@@ -137,9 +157,36 @@ export default {
             isLoggedIn: false // 新增，用于控制头像按钮显示隐藏
         };
     },
-    computed: {
+    computed: {},
+    mounted() {
+        this.check_login()
     },
     methods: {
+        logout() {
+            localStorage.removeItem("id")
+            localStorage.removeItem("username")
+            localStorage.removeItem("password")
+            // 刷新页面
+            this.refresh()
+        },
+        refresh() {
+            location.reload();
+        },
+        check_login() {
+            var requestBody = {
+                "username": localStorage.getItem("username"),
+                "password": localStorage.getItem("password")
+            }
+            var promise = fetch("/user/check", "POST", requestBody)
+            promise.then(resp => {
+                if (resp.status == 200) {
+                    var res = resp.data.result
+                    if (res.length != 0) {
+                        this.isLoggedIn = true
+                    }
+                }
+            })
+        },
         handleLoginDialogClose() {
             this.showLoginDialog = false;
         },
@@ -154,10 +201,31 @@ export default {
                 this.$message.warning('请输入密码');
                 return;
             }
-            // 这里可以添加实际的登录验证逻辑，比如发送请求到后端验证用户名和密码
-            // 暂时假设验证成功，设置登录状态为true并关闭登录窗口、隐藏Sign In按钮
-            this.isLoggedIn = true;
-            this.showLoginDialog = false;
+            // 查询数据库，用户名和密码是否正确，正确就把用户名和user-id, 保存到localStorage
+            var requestBody = {
+                "username": this.loginForm.username,
+                "password": this.loginForm.password
+            }
+
+            var promise = fetch("/user/check", "POST", requestBody)
+            promise.then(resp => {
+                if (resp.status == 200) {
+                    var res = resp.data.result
+                    if (res.length != 0) {
+                        var user_detail = res[0]
+                        this.$message.success('登录成功！');
+                        localStorage.setItem("uid", user_detail.id)
+                        localStorage.setItem("username", user_detail.name)
+                        localStorage.setItem("password", user_detail.password)
+                        this.isLoggedIn = true;
+                        this.showLoginDialog = false;
+                    } else {
+                        this.$message.warning('用户名或密码错误！');
+                        this.isLoggedIn = false;
+                        this.showLoginDialog = true;
+                    }
+                }
+            })
         },
         handleRegisterDialogClose() {
             this.showRegisterDialog = false;
@@ -176,13 +244,27 @@ export default {
                 return;
             }
             if (this.registerForm.password === this.registerForm.passwordConfirm) {
-                // 这里简化处理，实际项目中要发送注册请求到后端，成功后再进行登录操作等
-                // 假设注册成功后直接设置登录状态相关数据，模拟自动登录
-                this.loginForm.username = this.registerForm.username;
-                this.loginForm.password = this.registerForm.password;
-                this.showRegisterDialog = false;
-                this.showLoginDialog = false;
-                this.handleLogin();
+                var requestBody = {
+                    "username": this.registerForm.username,
+                    "password": this.registerForm.password
+                }
+                var promise = fetch("/user/register", "POST", requestBody)
+                promise.then(resp => {
+                    if (resp.status == 200) {
+                        var res = resp.data.result
+                        console.log(res.code);
+                        if (res.code == 0) {
+                            this.loginForm.username = this.registerForm.username;
+                            this.loginForm.password = this.registerForm.password;
+                            this.showRegisterDialog = false;
+                            this.showLoginDialog = false;
+                            this.handleLogin();
+                        } else {
+                            this.$message.warning('用户名已存在,请重新输入!');
+                        }
+                    }
+                })
+
             } else {
                 this.$message.error('两次输入密码不一致，请重新输入');
             }

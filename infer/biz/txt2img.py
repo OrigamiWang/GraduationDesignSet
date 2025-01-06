@@ -51,9 +51,10 @@ def txt2img(model_id, sampler_id, vae_id=None, lora_config=None, width=720, heig
 
     # gen img
     images = {}
-    for _ in range(batch_cnt):
-        if seed == -1:
-            using_seed = torch.randint(0, 2**32 - 1, (1,)).item()
+    raw_seed = seed
+    for idx in range(batch_cnt):
+        if raw_seed == -1:
+            seed = torch.randint(0, 2**32 - 1, (1,)).item()
         image = pipe(
                     height=height,
                     width=width,
@@ -61,16 +62,15 @@ def txt2img(model_id, sampler_id, vae_id=None, lora_config=None, width=720, heig
                     negative_prompt=negative_prompt,
                     num_inference_steps=steps,
                     guidance_scale=cfg_scale,
-                    generator=torch.manual_seed(using_seed)).images[0]
-        images[using_seed] = image
+                    generator=torch.manual_seed(seed)).images[0]
+        images[idx] = image
     
     output_imgs = []
     for seed, image in images.items():
-        output_img = f"output/generated_image_{seed}.png"
+        output_img = f"temp_output/generated_image_{seed}.png"
         image.save(output_img)
         output_imgs.append(encode_base64(output_img))
         # FIXME: 这里可以优化成保存文件到COS，然后返回COS的URL
-    
     return output_imgs
 
 

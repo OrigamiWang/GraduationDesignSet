@@ -1,5 +1,5 @@
 <template>
-    <div class="full">
+    <div v-infinite-scroll="load">
         <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
             <el-menu-item v-for="menu in menu_configs" :index="menu.index">{{menu.title}}</el-menu-item>
         </el-menu>
