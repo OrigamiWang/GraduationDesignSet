@@ -1,8 +1,8 @@
 <template>
 <div class="bg-gray-900 text-white">
     <header class="bg-gray-800 p-4">
-        <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-bold">
+        <div class="container flex justify-between items-center">
+            <h1 class="text-2xl font-bold" style="margin-left: 3.7vw">
                 <router-link to="/">ORIGAMI</router-link>
             </h1>
             <nav>
@@ -12,9 +12,6 @@
                     </li>
                     <li :class="{ 'active': $route.path === '/models' }">
                         <router-link to="/models">Models</router-link>
-                    </li>
-                    <li :class="{ 'active': $route.path === '/images' }">
-                        <router-link to="/images">Images</router-link>
                     </li>
                     <li v-if="!isLoggedIn">
                         <el-button type="primary" @click="showLoginDialog = true">

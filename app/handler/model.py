@@ -1,7 +1,7 @@
 from flask import request
 
 from biz import get_model_list, get_lora_by_base_name, get_vae_by_base_name
-
+from util import MINIO_CLI
 
 
 def get_model_list_handler():
@@ -23,3 +23,11 @@ def get_lora_list_by_base_name_handler():
     lora_dict_list = [lora.to_dict() for lora in lora_list]
 
     return lora_dict_list
+
+
+def get_model_imgs_handler(buk, path):
+    success, object_links = MINIO_CLI.ls_one_buk(buk, path)
+    if success:
+        return object_links
+    else:
+        return []

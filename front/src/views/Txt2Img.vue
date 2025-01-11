@@ -23,7 +23,7 @@
         </ul>
     </nav>
 </header>
-<div>
+<div style="margin-top: 2vh; min-height: 80vh">
     <div class="around column">
         <div id="form">
             <el-form :label-position="itemLabelPosition" label-width="auto" size="default" style="width: 30vw; max-width: 30vw;">
@@ -62,14 +62,8 @@
                 </el-form-item>
             </el-form>
         </div>
-        <!-- <div id="imgs" style="height: 100vh; width: 10vw" > -->
-        <div id="imgs" :style="{width: img.width, height: img.height}">
-            <el-carousel :interval="5000" arrow="always" style="width: 100%; height: 100%;">
-                <el-carousel-item v-for="(img, index) in imgs" :key="index">
-                    <img :src="img" style="width: 100%; height: 100%; object-fit: cover;" />
-                </el-carousel-item>
-            </el-carousel>
-        </div>
+        <ImgViewer :showImgViewer="showImgViewer" :imgList="imgList"></ImgViewer>
+        <Progress :showProgress="showProgress" :title="title"></Progress>
     </div>
 </div>
 </template>
@@ -77,26 +71,30 @@
   
 <script lang="ts" setup>
 import { fetch } from '../service/fetch.js'
-import { ref, onMounted, reactive } from 'vue'
+import { ref, onMounted } from 'vue'
 import { ElButton, ElForm, ElFormItem, ElSelect, ElOption, ElInput, ElSlider, ElCheckbox, ElCarousel, ElCarouselItem } from 'element-plus'
+import ImgViewer from './ImgViewer.vue';
+import Progress from './Progress.vue';
+import { useRoute } from 'vue-router';
+const route = useRoute();
 
-const steps_options = reactive([{ "label": "粗糙", "value": 10 }, { "label": "中等", "value": 25 }, { "label": "精细", "value": 50 }])
-const img = reactive({
-    height: '100vh',
-    width: '10vw',
-})
+const showImgViewer = ref(false)
+const showProgress = ref(false)
+const imgList = ref([])
+const title = ref('生成中,请等待...')
+const steps_options = ref([{ "label": "粗糙", "value": 10 }, { "label": "中等", "value": 25 }, { "label": "精细", "value": 50 }])
 const style_name = ref('')
 const style_options = ref([])
-const style_config = reactive({})
+const style_config = ref({})
 const width = ref(720)
 const height = ref(1280)
 const is_keep_random_seed = ref(false)
-const imgs = ref([])
 const batch_cnt = ref(2)
 const prompt = ref('')
 const seed = ref(-1)
 const steps = ref(10)
 const itemLabelPosition = ref('right')
+const query_config = ref({})
 
 const get_style_list = () => {
     const promise = fetch("/sd/get_style_list", "POST", null)
@@ -113,16 +111,47 @@ const get_style_list = () => {
     })
 }
 
-const auto_resize_img = () => {
-    if (imgs.value.length > 0) {
-        const imgObj = new Image();
-        imgObj.src = imgs.value[0];
-        imgObj.onload = () => {
-            const ratio = imgObj.height / imgObj.width
-            const widthValue = img.width.substring(0, img.width.length - 2)
-            const heightValue = widthValue * ratio
-            img.height = heightValue + "vh"
+onMounted(() => {
+    // this.auto_resize_img()
+    get_style_list()
+    set_template()
+    set_by_arg();
+})
+
+const set_by_arg = () => {
+    if (route.query.type != null) {
+        console.log("加载历史记录...");
+        query_config.value = JSON.parse(JSON.stringify(route.query))
+        query_config.value.config = JSON.parse(query_config.value.config)
+
+        const q_config = query_config.value
+        const template = q_config.config
+        
+        showImgViewer.value = true
+
+
+        steps.value = template.steps
+        style_name.value = "塔罗牌"
+        prompt.value = template.prompt
+        width.value = template.width
+        height.value = template.height
+        style_config.value = template.style_config
+
+        const reqBody = {
+            "path": q_config.path
         }
+
+        var promise = fetch("/oss/path", "POST", reqBody);
+        promise.then(resp => {
+            if (resp.status == 200) {
+                if (resp.data.result.length > 0) {
+                    const res = resp.data.result
+                    imgList.value = res
+                }
+            }
+        })
+
+
     }
 }
 
@@ -147,36 +176,39 @@ const set_template = () => {
 }
 
 const generate_img = () => {
+    showProgress.value = true
     const reqBody = {
+        uid: localStorage.getItem("uid"),
+        type: "txt2img",
         txt2img: true,
         width: width.value,
         height: height.value,
         prompt: prompt.value,
-        negative_prompt: style_config.negative_prompt,
-        cfg_scale: style_config.cfg_scale,
+        negative_prompt: style_config.value.negative_prompt,
+        cfg_scale: style_config.value.cfg_scale,
         steps: steps.value,
-        model_id: style_config.model_id,
-        lora_config: style_config.lora_config,
-        sampler_id: style_config.sampler_id,
-        vae_id: style_config.vae_id,
+        model_id: style_config.value.model_id,
+        lora_config: style_config.value.lora_config,
+        sampler_id: style_config.value.sampler_id,
+        vae_id: style_config.value.vae_id,
         batch_size: 1,
         seed: seed.value,
         batch_cnt: batch_cnt.value,
     }
-    console.log(reqBody);
+    
+    
     const promise = fetch("/infer/generate", "POST", reqBody)
     promise.then(resp => {
         if (resp.status == 200) {
-            const jsonString = resp.data.result;
-            const jsonArray = JSON.parse(jsonString);
-            const decodedArray = jsonArray.map(base64String => {
-                return "data:image/png;base64," + base64String;
-                // const decodedString = atob(base64String);
-                // return decodedString;
-            });
-            console.log(decodedArray);
-
-            imgs.value = decodedArray;
+            var jsonString = resp.data.result;
+            var url_list = JSON.parse(jsonString)
+            var res = [];
+            url_list.forEach(url => {
+                res.push(url)
+            })
+            imgList.value = res
+            showProgress.value = false
+            showImgViewer.value = true
         }
     })
 }
@@ -187,11 +219,6 @@ const keep_random_seed = () => {
     }
 }
 
-onMounted(() => {
-    // this.auto_resize_img()
-    get_style_list()
-    set_template()
-})
 </script>
 
   

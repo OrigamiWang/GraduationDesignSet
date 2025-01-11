@@ -1,5 +1,5 @@
 <template>
-<div class="container mx-auto px-4" style="width: 40vw">
+<div v-if="props.showImgViewer" class="container mx-auto px-4" style="width: 40vw">
     <div style="display: flex; justify-content: flex-end; align-items: center;">
         <el-button round @click="downloadOriginalImage">
             <el-icon style="margin-right: 1vw;">
@@ -33,10 +33,10 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onUpdated } from 'vue';
 import { saveAs } from 'file-saver';
-
-const props = defineProps(['imgList'])
+const time = ref(0)
+const props = defineProps(['imgList', 'showImgViewer'])
 
 // 假设这里是图片路径列表，你可以替换成真实从接口等获取的数据
 // const imgList = ref([
@@ -44,28 +44,37 @@ const props = defineProps(['imgList'])
 // 当前显示的图片，初始化为imgList中的第一张
 const currentImg = ref(props.imgList[0]);
 
+onUpdated(() => {
+    if (time.value == 0) {
+        currentImg.value = props.imgList[0]
+    }
+})
+
 // 点击缩略图切换显示图片的方法
 const showImg = (img) => {
     currentImg.value = img;
+    time.value += 1
+    console.log(time.value);
+    
 };
 
 // 切换到上一张图片的方法
 const prevImg = () => {
-    const currentIndex = props.imgList.value.findIndex(item => item === currentImg.value);
+    const currentIndex = props.imgList.findIndex(item => item === currentImg.value);
     if (currentIndex > 0) {
-        currentImg.value = props.imgList.value[currentIndex - 1];
+        currentImg.value = props.imgList[currentIndex - 1];
     } else {
-        currentImg.value = props.imgList.value[props.imgList.value.length - 1];
+        currentImg.value = props.imgList[props.imgList.length - 1];
     }
 };
 
 // 切换到下一张图片的方法
 const nextImg = () => {
-    const currentIndex = props.imgList.value.findIndex(item => item === currentImg.value);
-    if (currentIndex < props.imgList.value.length - 1) {
-        currentImg.value = props.imgList.value[currentIndex + 1];
+    const currentIndex = props.imgList.findIndex(item => item === currentImg.value);
+    if (currentIndex < props.imgList.length - 1) {
+        currentImg.value = props.imgList[currentIndex + 1];
     } else {
-        currentImg.value = props.imgList.value[0];
+        currentImg.value = props.imgList[0];
     }
 };
 

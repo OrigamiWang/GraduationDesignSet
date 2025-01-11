@@ -12,6 +12,13 @@ app = Flask(__name__)
 def get_model_list():
     return get_model_list_handler()
 
+@app.route("/sd/get_model_img_list", methods=["POST"])
+@standard_response
+def get_model_img_list():
+    req = request.get_json()
+    buk, path = req['buk'], req['path']
+    return get_model_imgs_handler(buk, path)
+
 
 # 基于base获取lora列表
 @app.route("/sd/get_lora_list_by_base_name", methods=['POST'])
@@ -52,14 +59,14 @@ def get_home_permissions():
 @app.route("/file/upload", methods=['POST'])
 @standard_response
 def upload_file():
+    uid = request.args.get('uid')
     file = request.files.get('file')
     filename = file.filename
-    return upload_file_handler(filename, file)
+    return upload_file_handler(uid, filename, file)
 
 @app.route("/file/upload/check", methods=['POST'])
 @standard_response
 def check_avatar_file():
-    print(request.files)
     file = request.files.get('file')
     filename = file.filename
     return check_human_img_handler(filename, file)
@@ -96,7 +103,6 @@ def check_user():
     pswd = req['password']
     return check_user_handler(name, pswd)
 
-
 # history
 @app.route("/history/add", methods=["POST"])
 @standard_response
@@ -106,5 +112,29 @@ def add_his():
     config, input = req.get('config', {}), req.get('input', {})
     add_his_handler(uid, type_name, buk, filepath, config, input)
 
+@app.route("/history/all", methods=["POST"])
+@standard_response
+def get_all_his():
+    return get_all_his_handler()
+
+
+@app.route("/oss/path", methods=["POST"])
+@standard_response
+def get_img_url_by_path():
+    req = request.get_json()
+    path = req['path']
+    return get_oss_url_by_path_handler(path)
+
+@app.route("/file/uploadB64", methods=["POST"])
+def upload_base64_file():
+    req = request.get_json()
+    uid = req['uid']
+    filename = req['filename']
+    base64_data = req['base64_data']
+    type_name = req['type_name']
+    return upload_b64file_handler(uid, filename, type_name, base64_data)
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
+
+

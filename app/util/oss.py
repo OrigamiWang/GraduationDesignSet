@@ -3,6 +3,7 @@ import io
 from datetime import timedelta
 from .b64 import decode_base64
 
+
 class MinioClient:
     def __init__(self):
         client = Minio("127.0.0.1:9000",

@@ -20,9 +20,7 @@ def txt2img():
 # 生成头像, 先检测图片合法性(多人/非人都是无效，只能是单人)
 @app.route("/infer/check_avatar", methods=['POST'])
 def detect_human():
-    print(request.files)
     file = request.files['file']
-    print(file)
     return check_avatar_handler(file)
 
 

@@ -23,12 +23,12 @@
         </ul>
     </nav>
 </header>
-<div>
+<div style="margin-top: 2vh;">
     <div class="around column">
         <div id="form">
             <el-form ref="form" :model="form" :label-position="itemLabelPosition" label-width="auto" size="default" style="width: 30vw; max-width: 35vw;">
                 <el-form-item label="checkpoint" :label-position="itemLabelPosition">
-                    <el-select @change="change_model" v-model="form.model_name" placeholder="请选择">
+                    <el-select @change="change_model" v-model="modelName" placeholder="请选择">
                         <el-option v-for="item in modelOptions" :key="item.value" :label="item.label" :value="item.value">
                         </el-option>
                     </el-select>
@@ -92,12 +92,12 @@
                     <el-checkbox @click="keep_random_seed" v-model="isKeepRandomSeed">保持随机</el-checkbox>
                 </el-form-item>
                 <el-form-item>
-                    <el-button @click="temp_generate_img">生成图片</el-button>
+                    <el-button @click="click_generate_img">生成图片</el-button>
                 </el-form-item>
             </el-form>
         </div>
-        <ImgViewer :imgList="imgList"></ImgViewer>
-        <Progress :showProgress="showProgress"></Progress>
+        <ImgViewer :showImgViewer="showImgViewer" :imgList="imgList"></ImgViewer>
+        <Progress :showProgress="showProgress" :title="title"></Progress>
     </div>
 </div>
 </template>
@@ -107,13 +107,17 @@ import { ref, onMounted } from 'vue';
 import { fetch } from '../service/fetch.js';
 import ImgViewer from './ImgViewer.vue';
 import Progress from './Progress.vue';
+import { useRoute } from 'vue-router';
+const route = useRoute();
 
+const showImgViewer = ref(false)
 const loraItems = ref([{
     selectedValue: '',
     weight: null,
 }]);
+const title = ref('生成中,请等待...')
 const form = ref({});
-const lora_items = ref({})
+const modelName = ref('');
 const modelOptions = ref([]);
 const modelBaseMap = ref({});
 const loraOptions = ref([]);
@@ -133,30 +137,70 @@ const height = ref(1280);
 const cfgScale = ref(7);
 const seed = ref(-1);
 const isKeepRandomSeed = ref(false);
-const imgs = ref([]);
 const batchCnt = ref(1);
 const itemLabelPosition = ref('right')
 const showProgress = ref(false)
 const imgList = ref([])
+const query_config = ref({})
 
 onMounted(() => {
     // this.auto_resize_img()
     get_model_list();
     set_template();
+    set_by_arg();
 });
 
-const auto_resize_img = () => {
-    if (imgs.value.length > 0) {
-        const img = new Image();
-        img.src = imgs.value[0];
-        img.onload = () => {
-            const ratio = img.height / img.width;
-            const width = img.width.value.substring(0, img.width.value.length - 2);
-            const height = width * ratio;
-            img.height.value = height + "vh";
+const set_by_arg = () => {
+    if (route.query.type != null) {
+        console.log("加载历史记录...");
+        query_config.value = JSON.parse(JSON.stringify(route.query))
+        query_config.value.config = JSON.parse(query_config.value.config)
+
+        const q_config = query_config.value
+        const template = q_config.config
+        
+        showImgViewer.value = true
+
+
+        modelName.value = template.model_id;
+        var loraItemsTemp = [];
+        for (let key in template.lora_config) {
+            var val = template.lora_config[key];
+            loraItemsTemp.push({
+                selectedValue: key,
+                weight: val,
+            });
         }
+        loraItems.value = loraItemsTemp;
+        prompt.value = template.prompt;
+        negativePrompt.value = template.negative_prompt;
+        samplingVal.value = template.sampler_id;
+        vaeVal.value = template.vae_id;
+        samplingSteps.value = template.steps;
+        width.value = template.width;
+        height.value = template.height;
+        cfgScale.value = template.cfg_scale;
+        seed.value = template.seed;
+        batchCnt.value = 1;
+
+        const reqBody = {
+            "path": q_config.path
+        }
+
+        var promise = fetch("/oss/path", "POST", reqBody);
+        promise.then(resp => {
+            if (resp.status == 200) {
+                if (resp.data.result.length > 0) {
+                    const res = resp.data.result
+                    imgList.value = res
+                }
+            }
+        })
+
+
     }
-};
+}
+
 
 const set_template = () => {
     // 设置模板，用于快速填充配置
@@ -180,7 +224,7 @@ const set_template = () => {
         "batch_cnt": 1
     };
 
-    form.value.model_name = template.model_id;
+    modelName.value = template.model_id;
     var loraItemsTemp = [];
     for (let key in template.lora_config) {
         var val = template.lora_config[key];
@@ -200,11 +244,10 @@ const set_template = () => {
     cfgScale.value = template.cfg_scale;
     seed.value = template.seed;
 };
-const temp_generate_img = () => {
+const click_generate_img = () => {
     showProgress.value = true
     // generate
     generate_img()
-    showProgress.value = false
 
 }
 const generate_img = () => {
@@ -217,7 +260,7 @@ const generate_img = () => {
         uid: localStorage.getItem("uid"),
         type: "txt2imgpro",
         txt2img: true,
-        model_id: form.value.model_name,
+        model_id: modelName.value,
         lora_config: lora_config,
         prompt: prompt.value,
         negative_prompt: negativePrompt.value,
@@ -241,10 +284,9 @@ const generate_img = () => {
             url_list.forEach(url => {
                 res.push(url)
             })
-            console.log("res: ");
-            console.log(res);
             imgList.value = res
-            // imgs.value = decodedArray;
+            showProgress.value = false
+            showImgViewer.value = true
         }
     });
 };

@@ -20,11 +20,6 @@ const routes =
                     component: () => import('../views/Models.vue')
                 },
                 {
-                    path: '/images',
-                    name: 'Images',
-                    component: () => import('../views/Images.vue')
-                },
-                {
                     path: '/profile',
                     name: 'Profile',
                     component: () => import('../views/Profile.vue')
@@ -74,7 +69,7 @@ const routes =
         {
             path: '/test',
             name: 'test',
-            component: () => import('../views/Test.vue'),
+            component: () => import('../views/HistoryBox.vue'),
         }
     ]
 

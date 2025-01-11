@@ -23,7 +23,7 @@
         </ul>
     </nav>
 </header>
-<div>
+<div style="margin-top: 2vh; min-height: 80vh">
     <div class="around column">
         <div id="form">
             <el-form :model="form" :label-position="itemLabelPosition" label-width="auto" size="default" style="width: 35vw; max-width: 35vw;">
@@ -64,15 +64,8 @@
                 </el-form-item>
             </el-form>
         </div>
-        <ImgViewer/>
-        <!-- <div id="imgs" style="height: 100vh; width: 10vw" > -->
-        <!-- <div id="imgs" :style="{width: img.width, height: img.height}">
-            <el-carousel :interval="5000" arrow="always" style="width: 100%; height: 100%;">
-                <el-carousel-item v-for="(img, index) in imgs" :key="index">
-                    <img :src="img" style="width: 100%; height: 100%; object-fit: cover;" />
-                </el-carousel-item>
-            </el-carousel>
-        </div> -->
+        <ImgViewer :showImgViewer="showImgViewer" :imgList="imgList"></ImgViewer>
+        <Progress :showProgress="showProgress" :title="title"></Progress>
     </div>
 </div>
 </template>
@@ -82,7 +75,15 @@
 import { ref, onMounted } from 'vue';
 import { fetch } from '../service/fetch.js';
 import ImgViewer from './ImgViewer.vue';
+import Progress from './Progress.vue';
+import { useRoute } from 'vue-router';
+const route = useRoute();
 
+const showImgViewer = ref(false)
+const showProgress = ref(false)
+const imgList = ref([])
+const itemLabelPosition = ref('right')
+const title = ref('生成中,请等待...')
 const ref1 = ref(null);
 const ref2 = ref(null);
 const ref3 = ref(null);
@@ -92,26 +93,28 @@ const ref6 = ref(null);
 
 const fileList = ref([]);
 const steps_options = ref([{ "label": "粗糙", "value": 10 }, { "label": "中等", "value": 25 }, { "label": "精细", "value": 50 }]);
-const img = ref({
-    height: '100vh',
-    width: '10vw',
-});
 const form = ref({});
 const style_options = ref([]);
 const style_config = ref({});
 const width = ref(720);
 const height = ref(1280);
 const is_keep_random_seed = ref(false);
-const imgs = ref([]);
 const batch_cnt = ref(1);
 const seed = ref(-1);
 const img_base64_str = ref('');
+const ossUrl = ref("")
+const query_config = ref({})
+
 // imgs: ["https://dummyimage.com/1024x2048&text=A"],
 
 const handleSuccess = (file) => {
-    fileList.value.push({ "filename": file.result.filename, "base64_str": file.result.base64_str });
+    var oss_url = file.result.oss_url;
+    fileList.value.push({ "filename": file.result.filename, "base64_str": file.result.base64_str, "oss_url": oss_url });
     img_base64_str.value = file.result.base64_str;
+    const path = oss_url.substring(39, oss_url.indexOf("?"))
+    ossUrl.value = path;
 };
+
 
 const handleRemove = (file, fileList) => {
     console.log("remove file...");
@@ -122,7 +125,7 @@ const handlePreview = (file) => {
 };
 
 const uploadUrl = () => {
-    return 'http://localhost:5173/api/file/upload';
+    return 'http://localhost:5173/api/file/upload?uid=' + localStorage.getItem("uid");
 };
 
 const get_style_list = async () => {
@@ -138,6 +141,59 @@ const get_style_list = async () => {
     }
 };
 
+onMounted(() => {
+    // this.auto_resize_img()
+    get_style_list();
+    set_template();
+    set_by_arg();
+});
+
+const set_by_arg = () => {
+    if (route.query.type != null) {
+        console.log("加载历史记录...");
+        query_config.value = JSON.parse(JSON.stringify(route.query))
+        query_config.value.config = JSON.parse(query_config.value.config)
+
+        const q_config = query_config.value
+        const template = q_config.config
+        
+        showImgViewer.value = true
+
+
+        form.value.steps = template.steps;
+        form.value.style_name = "塔罗牌";
+        width.value = template.width;
+        height.value = template.height;
+        style_config.value = template.style_config;
+
+        const reqBody = {
+            "path": q_config.path
+        }
+
+        var promise = fetch("/oss/path", "POST", reqBody);
+        promise.then(resp => {
+            if (resp.status == 200) {
+                if (resp.data.result.length > 0) {
+                    const res = resp.data.result
+                    imgList.value = res
+                }
+            }
+        })
+        const reqBody2 = {
+            "path": template.oss_url
+        }
+        var promise2 = fetch("/oss/path", "POST", reqBody2);
+        promise2.then(resp => {
+            if (resp.status == 200) {
+                if (resp.data.result.length > 0) {
+                    const res = resp.data.result
+                    fileList.value = [{"name": "1", "url": res[0]}]
+                }
+            }
+        })
+
+    }
+}
 
 const set_template = () => {
     // 设置模板，用于快速填充配置
@@ -158,7 +214,10 @@ const set_template = () => {
 };
 
 const generate_img = async () => {
+    showProgress.value = true
     const reqBody = {
+        uid: localStorage.getItem("uid"),
+        type: "img2img",
         txt2img: true,
         width: width.value,
         height: height.value,
@@ -173,18 +232,22 @@ const generate_img = async () => {
         seed: seed.value,
         batch_cnt: batch_cnt.value,
         img_base64_str: img_base64_str.value,
+        oss_url: ossUrl.value
     };
     console.log(reqBody);
     const promise = await fetch("/infer/generate", "POST", reqBody);
     if (promise.status == 200) {
-        const jsonString = promise.data.result;
-        const jsonArray = JSON.parse(jsonString);
-        const decodedArray = jsonArray.map(base64String => {
-            return "data:image/png;base64," + base64String;
-            // const decodedString = atob(base64String);
-            // return decodedString;
-        });
-        imgs.value = decodedArray;
+        var jsonString = promise.data.result;
+        var url_list = JSON.parse(jsonString)
+        var res = [];
+        url_list.forEach(url => {
+            res.push(url)
+        })
+        console.log("res: ");
+        console.log(res);
+        imgList.value = res
+        showProgress.value = false
+        showImgViewer.value = true
     }
 };
 
@@ -194,11 +257,6 @@ const keep_random_seed = () => {
     }
 };
 
-onMounted(() => {
-    // this.auto_resize_img()
-    get_style_list();
-    set_template();
-});
 </script>
 
   

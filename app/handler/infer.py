@@ -15,8 +15,11 @@ def generate_handler():
     uid = get_map_val(req_dict, 'uid')
     type_name = get_map_val(req_dict, 'type')
     copy_req_dict = copy.deepcopy(req_dict)
-    del copy_req_dict['uid']
-    del copy_req_dict['type']
+
+    keys_to_del = ['uid', 'type', 'img_base64_str']
+    for key in keys_to_del:
+        if key in copy_req_dict:
+            del copy_req_dict[key]
 
     img_data = ImgData(get_map_val(req_dict, 'width'), 
                        get_map_val(req_dict, 'height'))
@@ -76,7 +79,6 @@ def generate_handler():
         b64_img_list = json.loads(resp.content)
     url_list = []
     file_list = []
-    print(f'b64_img_list: {len(b64_img_list)}')
     for idx in range(len(b64_img_list)):
         b64_img = b64_img_list[idx]
         filename = f'{str(time.time()).replace(".", "")}{idx}'
@@ -90,10 +92,6 @@ def generate_handler():
     # 将结果也保存一份到mysql作为历史记录
     
     return json.dumps(url_list)
-
-        
-    
-
 
 
 def avatar_handler():
