@@ -22,7 +22,7 @@
                         <el-dropdown>
                             <span class="el-dropdown-link">
                                 <el-avatar style="cursor: pointer; height: 4vh; width: 4vh" @click="showAvatarDropdown = true">
-                                    <img src="../assets/avatar/people.png" alt="">
+                                    <img src="../assets/avatar/male.jpg" alt="">
                                 </el-avatar>
                             </span>
                             <template #dropdown>
@@ -35,18 +35,10 @@
                                             <span style="color: #b3b3b7;">Your Profile</span>
                                         </el-dropdown-item>
                                     </router-link>
-                                    <router-link to="/liked">
-                                        <el-dropdown-item icon="el-icon-edit">
-                                            <el-icon color="#f28c12">
-                                                <Star />
-                                            </el-icon>
-                                            <span style="color: #b3b3b7;">Liked</span>
-                                        </el-dropdown-item>
-                                    </router-link>
                                     <router-link to="/history">
                                         <el-dropdown-item icon="el-icon-edit">
                                             <el-icon color="#f28c12">
-                                                <Star />
+                                                <Clock />
                                             </el-icon>
                                             <span style="color: #b3b3b7;">History</span>
                                         </el-dropdown-item>
@@ -116,16 +108,15 @@
     </keep-alive>
     <footer class="bg-gray-800 p-4 text-center text-gray-500"></footer>
     <!-- 头像按钮及下拉框 -->
-    <el-dropdown trigger="click" class="avatar-dropdown" v-if="isLoggedIn">
+    <!-- <el-dropdown trigger="click" class="avatar-dropdown" v-if="isLoggedIn">
         <span class="el-dropdown-link">
             <i class="el-icon-user"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
             <el-dropdown-item icon="el-icon-user">Profile</el-dropdown-item>
             <el-dropdown-item icon="el-icon-star-on">Stars</el-dropdown-item>
-            <el-dropdown-item icon="el-icon-heart">Liked Models</el-dropdown-item>
         </el-dropdown-menu>
-    </el-dropdown>
+    </el-dropdown> -->
 </div>
 </template>
 
@@ -160,7 +151,7 @@ export default {
     },
     methods: {
         logout() {
-            localStorage.removeItem("id")
+            localStorage.removeItem("uid")
             localStorage.removeItem("username")
             localStorage.removeItem("password")
             // 刷新页面

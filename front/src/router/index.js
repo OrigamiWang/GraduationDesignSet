@@ -25,11 +25,6 @@ const routes =
                     component: () => import('../views/Profile.vue')
                 },
                 {
-                    path: '/liked',
-                    name: 'Liked',
-                    component: () => import('../views/Liked.vue')
-                },
-                {
                     path: '/txt2imgpro',
                     name: 'txt2imgpro',
                     component: () => import('../views/Txt2ImgPro.vue')
@@ -69,7 +64,7 @@ const routes =
         {
             path: '/test',
             name: 'test',
-            component: () => import('../views/HistoryBox.vue'),
+            component: () => import('../views/Test.vue'),
         }
     ]
 

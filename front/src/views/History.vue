@@ -27,7 +27,7 @@
     <div v-if="$route.query.type != null">
         <div class="grid grid-cols-4 gap-4">
             <div v-for="img in currentPageImages" :key="img.id" class="bg-gray-700 h-64">
-              <HistoryBox :query="img.query"></HistoryBox>
+                <HistoryBox :query="img.query"></HistoryBox>
             </div>
         </div>
 
@@ -40,7 +40,11 @@
         </div>
     </div>
     <div v-else>
-      history
+        <el-text class="mx-1" size="large" style="color: white;">历史记录</el-text>
+        <el-divider />
+
+
+
     </div>
 
 </main>
@@ -51,7 +55,6 @@ import { ref, computed, onMounted, watchEffect, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { fetch } from '../service/fetch.js';
 import HistoryBox from './HistoryBox.vue'
-
 
 const router = useRouter();
 const route = useRoute();
@@ -70,40 +73,41 @@ const currentPageImages = computed(() => {
 });
 
 onMounted(() => {
-  get_all_his()
+    get_all_his()
 })
 
 const get_all_his = () => {
-  var promise = fetch("/history/all", "POST");
-  promise.then(resp => {
-    if (resp.status == 200) {
-      const res = resp.data.result
-      var queryDict = {}
-      const titleList = ["txt2imgpro", "txt2img", "img2imgpro", "img2img", "avatar", "bg"]
-      titleList.forEach(title => {
-        queryDict[title] = []
-      })
-
-      for (let i = 0; i < res.length; i++) {
-        const type = res[i].type
-        queryDict[type].push({"id": i, "query": res[i]})
-      }
-      images.value = queryDict[route.query.type]
+    const reqBody = {
+        "uid": localStorage.getItem("uid")
     }
-  })
+    var promise = fetch("/history/all", "POST", reqBody);
+    promise.then(resp => {
+        if (resp.status == 200) {
+            const res = resp.data.result
+            var queryDict = {}
+            const titleList = ["txt2imgpro", "txt2img", "img2imgpro", "img2img", "avatar", "bg"]
+            titleList.forEach(title => {
+                queryDict[title] = []
+            })
+
+            for (let i = 0; i < res.length; i++) {
+                const type = res[i].type
+                queryDict[type].push({ "id": i, "query": res[i] })
+            }
+            images.value = queryDict[route.query.type]
+        }
+    })
 
 }
 
 watch(
-  () => route.query.type,
-  (newVal, oldVal) => {
-      if (newVal != null) {
-        get_all_his()
+    () => route.query.type,
+    (newVal, oldVal) => {
+        if (newVal != null) {
+            get_all_his()
+        }
     }
-  }
 );
-
-
 
 // 方法定义
 const prevPage = () => {
@@ -123,8 +127,6 @@ const goToPage = (page) => {
         currentPage.value = page;
     }
 };
-
-
 
 // 原代码中相关变量未在提供部分完整定义（如isLoggedIn等），这里假设后续补充完整对应逻辑
 // 示例的点击事件等方法（如logout等），需要补充具体实现逻辑，以下只是保持结构占位

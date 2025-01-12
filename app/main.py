@@ -115,7 +115,16 @@ def add_his():
 @app.route("/history/all", methods=["POST"])
 @standard_response
 def get_all_his():
-    return get_all_his_handler()
+    req = request.get_json()
+    uid = req['uid']
+    return get_all_his_handler(uid)
+
+@app.route("/history/other", methods=["POST"])
+@standard_response
+def get_other_his():
+    req = request.get_json()
+    uid = req['uid']
+    return get_other_his_handler(uid)
 
 
 @app.route("/oss/path", methods=["POST"])
@@ -133,6 +142,9 @@ def upload_base64_file():
     base64_data = req['base64_data']
     type_name = req['type_name']
     return upload_b64file_handler(uid, filename, type_name, base64_data)
+
+
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)

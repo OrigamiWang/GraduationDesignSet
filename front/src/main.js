@@ -9,7 +9,8 @@ import './style.css'
 import './style/style.vue'
 import './assets/styles.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
-
+import JsonViewer from "vue3-json-viewer"
+import 'element-plus/theme-chalk/dark/css-vars.css'
 
 
 const app = createApp(App)
@@ -21,5 +22,6 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 app.use(ElementPlus)
 app.use(router)
 app.use(store)
+app.use(JsonViewer)
 app.config.globalProperties.$http = axios
 app.mount('#app')

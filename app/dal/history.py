@@ -8,6 +8,11 @@ def add_his(uid, type_name, buk, filepath, config={}, input={}):
     execute_sql_with_commit(sql)
 
 
-def select_all():
-    sql = "SELECT * FROM history order by id DESC"
+def select_all(uid):
+    sql = f"SELECT * FROM history WHERE uid={uid} order by id DESC"
+    return execute_sql(sql)
+
+
+def select_other(uid):
+    sql = f"SELECT * FROM history WHERE uid!={uid} order by id DESC"
     return execute_sql(sql)
